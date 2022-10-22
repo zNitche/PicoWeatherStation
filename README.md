@@ -1,6 +1,6 @@
 ### PicoWeatherStation
 
-Raspberry Pico powered weather station integrated with WeatherStationAPI
+Raspberry Pico W powered weather station integrated with WeatherStationAPI
 
 ---
 

@@ -1,6 +1,9 @@
+from station import Station
+
+
 def main():
-    print("Hello Pico")
+    Station().run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
