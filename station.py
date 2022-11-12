@@ -44,7 +44,7 @@ class Station:
             finally:
                 self.network_controller.close_wlan_session()
 
-                time.sleep(CommonConfig.LOG_DELAY)
+            time.sleep(CommonConfig.LOG_DELAY)
 
     def run(self):
         self.sensors_controller.init_sensors(self.i2c)

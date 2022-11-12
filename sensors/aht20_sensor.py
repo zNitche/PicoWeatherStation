@@ -1,11 +1,14 @@
 from sensors.sensor_base import SensorBase
 from libs.aht20 import AHT20
 from config import GPIOConfig
+import utils
 
 
 class AHT20Sensor(SensorBase):
     def __init__(self, i2c):
-        super().__init__(i2c)
+        self.i2c = i2c
+
+        super().__init__()
 
     def init_sensor(self):
         try:
@@ -14,6 +17,7 @@ class AHT20Sensor(SensorBase):
             self.initialized = True
 
         except Exception as e:
+            utils.print_debug(f"{self.get_name()}: {str(e)}")
             self.initialized = False
 
     def get_name(self):

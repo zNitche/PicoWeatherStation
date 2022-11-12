@@ -79,7 +79,7 @@ class NetworkController:
         return networks
 
     def send_post(self, url, payload, headers):
-        response = urequests.post(url, data=json.dumps(payload), headers=headers, timeout=2)
+        response = urequests.post(url, data=json.dumps(payload), headers=headers, timeout=5)
         response.close()
 
     def open_wlan_session(self):
