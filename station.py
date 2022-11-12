@@ -1,7 +1,7 @@
 import time
 import machine
 import utils
-from config import GPIOConfig, APIConsts
+from config import GPIOConfig, APIConsts, CommonConfig
 from controllers.sensors_controller import SensorsController
 from controllers.network_controller import NetworkController
 
@@ -22,9 +22,9 @@ class Station:
 
     def process(self):
         while True:
-            self.network_controller.open_wlan_session()
-
             try:
+                self.network_controller.open_wlan_session()
+
                 for sensor in self.sensors_controller.sensors:
                     sensor_data = sensor.get_data()
                     utils.print_debug(sensor_data)
@@ -38,13 +38,13 @@ class Station:
                                                           data,
                                                           {APIConsts.API_AUTH_TOKEN_KEY_NAME: APIConsts.API_AUTH_TOKEN})
 
-                time.sleep(5)
-
             except Exception as e:
                 utils.print_debug(str(e))
 
             finally:
                 self.network_controller.close_wlan_session()
+
+                time.sleep(CommonConfig.LOG_DELAY)
 
     def run(self):
         self.sensors_controller.init_sensors(self.i2c)

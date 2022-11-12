@@ -1,5 +1,6 @@
 class CommonConfig:
     DEBUG_MODE = False
+    LOG_DELAY = 1800
 
 
 class APIConsts:
