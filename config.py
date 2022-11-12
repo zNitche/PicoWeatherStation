@@ -1,3 +1,7 @@
+class CommonConfig:
+    DEBUG_MODE = True
+
+
 class APIConsts:
     API_AUTH_TOKEN_KEY_NAME = "auth_token"
     API_AUTH_TOKEN = "" #WeatherStationAPI auth key

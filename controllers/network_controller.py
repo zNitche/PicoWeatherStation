@@ -1,7 +1,8 @@
 import network
 import time
 from config import NetworkConfig
-import urequests as requests
+import urequests
+import json
 
 
 class NetworkController:
@@ -70,7 +71,6 @@ class NetworkController:
 
     def get_wifi_networks(self):
         print("Getting wifi networks...")
-
         self.activate_wlan_if_disabled()
 
         networks = self.wlan.scan()
@@ -78,7 +78,8 @@ class NetworkController:
         return networks
 
     def send_post(self, url, payload, headers):
-        requests.post(url, json=payload, headers=headers)
+        response = urequests.post(url, data=json.dumps(payload), headers=headers, timeout=2)
+        response.close()
 
     def open_wlan_session(self):
         self.toggle_wlan(True)
