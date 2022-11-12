@@ -1,5 +1,6 @@
 import time
 import machine
+import utils
 from config import GPIOConfig, APIConsts
 from controllers.sensors_controller import SensorsController
 from controllers.network_controller import NetworkController
@@ -26,7 +27,7 @@ class Station:
             try:
                 for sensor in self.sensors_controller.sensors:
                     sensor_data = sensor.get_data()
-                    print(sensor_data)
+                    utils.print_debug(sensor_data)
 
                     for log_type, value in sensor_data.items():
                         data = {
@@ -40,7 +41,7 @@ class Station:
                 time.sleep(5)
 
             except Exception as e:
-                print(str(e))
+                utils.print_debug(str(e))
 
             finally:
                 self.network_controller.close_wlan_session()

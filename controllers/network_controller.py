@@ -1,6 +1,7 @@
 import network
 import time
 from config import NetworkConfig
+import utils
 import urequests
 import json
 
@@ -10,7 +11,7 @@ class NetworkController:
         self.wlan = self.init_wlan()
 
     def init_wlan(self):
-        print("WLAN init...")
+        utils.print_debug("WLAN init...")
         wlan = network.WLAN(network.STA_IF)
 
         return wlan
@@ -19,36 +20,36 @@ class NetworkController:
         if not status == self.wlan.active():
             self.wlan.active(status)
 
-        print(f"WLAN Status: {self.wlan.active()}")
+        utils.print_debug(f"WLAN Status: {self.wlan.active()}")
 
     def check_if_wlan_enabled(self):
         return self.wlan.active()
 
     def activate_wlan_if_disabled(self):
         if not self.wlan.active():
-            print("Enabling WLAN interface...")
+            utils.print_debug("Enabling WLAN interface...")
 
             self.toggle_wlan(True)
 
     def connect_to_network(self, ssid, password):
         self.activate_wlan_if_disabled()
 
-        print("Connecting to WIFI network...")
+        utils.print_debug("Connecting to WIFI network...")
 
         self.network_connection_loop(ssid, password)
 
         if self.wlan.isconnected():
-            print(f"Connected to '{ssid}' network...")
-            print(f"IP address: {self.wlan.ifconfig()[0]}...")
+            utils.print_debug(f"Connected to '{ssid}' network...")
+            utils.print_debug(f"IP address: {self.wlan.ifconfig()[0]}...")
 
         else:
-            print("Failed to connect...")
+            utils.print_debug("Failed to connect...")
 
     def network_connection_loop(self, ssid, password):
         attempts = 0
 
         while (not self.wlan.isconnected()) and attempts < NetworkConfig.MAX_WIFI_RECONNECT_ATTEMPTS:
-            print("Trying to establish WiFi connection...")
+            utils.print_debug("Trying to establish WiFi connection...")
 
             time.sleep(5)
             self.wlan.connect(ssid, password)
@@ -56,7 +57,7 @@ class NetworkController:
             attempts += 1
 
     def disconnect_from_network(self):
-        print("Disconnecting from network...")
+        utils.print_debug("Disconnecting from network...")
 
         if self.wlan.isconnected():
             self.wlan.disconnect()
@@ -70,7 +71,7 @@ class NetworkController:
         return config
 
     def get_wifi_networks(self):
-        print("Getting wifi networks...")
+        utils.print_debug("Getting wifi networks...")
         self.activate_wlan_if_disabled()
 
         networks = self.wlan.scan()

@@ -1,5 +1,5 @@
 class CommonConfig:
-    DEBUG_MODE = True
+    DEBUG_MODE = False
 
 
 class APIConsts:
