@@ -1,41 +1,50 @@
 import time
 import machine
-from libs import aht20
-from consts import Consts
+from config import GPIOConfig, APIConsts
+from controllers.sensors_controller import SensorsController
+from controllers.network_controller import NetworkController
 
 
 class Station:
     def __init__(self):
         self.onboard_led = machine.Pin("LED", machine.Pin.OUT)
-        self.i2c = machine.I2C(0, scl=machine.Pin(Consts.SCL_PIN), sda=machine.Pin(Consts.SDA_PIN), freq=100000)
 
-        self.temp_sensor = None
-        self.display = None
+        self.sensors_controller = SensorsController()
+        self.network_controller = NetworkController()
 
-        self.initialized = False
+        self.i2c = machine.I2C(0, scl=machine.Pin(GPIOConfig.SCL_PIN), sda=machine.Pin(GPIOConfig.SDA_PIN), freq=100000)
 
-    def init_sensor(self):
-        try:
-            self.temp_sensor = aht20.AHT20(self.i2c, address=Consts.AHT20_I2C_ADDRESS)
+        self.toggle_onboard_led(True)
 
-            self.initialized = True
-
-        except Exception as e:
-            self.initialized = False
+    def toggle_onboard_led(self, state):
+        self.onboard_led.on() if state else self.onboard_led.off()
 
     def process(self):
         while True:
-            if self.initialized:
-                temp = self.temp_sensor.get_temperature()
-                hum = self.temp_sensor.get_relative_humidity()
+            self.network_controller.open_wlan_session()
 
-                print(f"Temp: {temp}, Hum: {hum}")
+            try:
+                for sensor in self.sensors_controller.sensors:
+                    sensor_data = sensor.get_data()
+                    print(sensor_data)
 
-            else:
-                self.onboard_led.toggle()
+                    for log_type, value in sensor_data.items():
+                        data = {
+                            APIConsts.API_VALUE_DATA_KEY: value
+                        }
 
-            time.sleep(1)
+                        self.network_controller.send_post(f"{APIConsts.API_IP}{APIConsts.API_URL.format(log_type=log_type)}",
+                                                          data,
+                                                          {APIConsts.API_AUTH_TOKEN_KEY_NAME: APIConsts.API_AUTH_TOKEN})
+
+                time.sleep(5)
+
+            except Exception as e:
+                print(str(e))
+
+            finally:
+                self.network_controller.close_wlan_session()
 
     def run(self):
-        self.init_sensor()
+        self.sensors_controller.init_sensors(self.i2c)
         self.process()
